@@ -48,6 +48,8 @@ public class MaxBinHeap {
             keys[xIndex] = tempKey;
             xIndex = xIndex / 2;
         }
+
+        size++;
     }
 
     private int insertAtEnd(int x){
@@ -84,17 +86,40 @@ public class MaxBinHeap {
             RuntimeException ex = new RuntimeException("Cannot return max element, heap is empty!");
             throw ex;
         }
-
         return keys[1];
     }
 
     public int deleteMax() throws RuntimeException{
-        //need to percolate root element down swapping with 2nd largest element then delete it once it's a leaf 
+        int i, minKey, currIndex = 1, tempKey = 0, maxIndex = 1;
+
+        for (i = keys.length - 1; i == -1; i--){
+
+        }
+
+        minKey = keys[i + 1];
+        keys[maxIndex] = minKey;
+
+        while(currIndex * 2 != -1 && currIndex * 2 + 1 != -1){
+            if(minKey > keys[currIndex * 2] || minKey > keys[currIndex * 2 + 1])
+                break;
+            currIndex = keys[currIndex * 2] > keys[currIndex * 2 + 1] ? currIndex * 2 : currIndex * 2 + 1;
+            tempKey = keys[currIndex];
+            keys[currIndex / 2] = tempKey;
+            keys[currIndex] = minKey;
+        }
+
+
         return 0;
     }
 
     public String toString(){
-        return "";
+        String keysString = "";
+
+        //iterate through each key in the list
+        for (int k = 1; keys[k] != -1 && k < keys.length; k++)
+            keysString += keys[k] + ", ";
+
+        return keysString;
     }
 
     public static void sortArray(int k, int[] a){
