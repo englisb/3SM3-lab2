@@ -87,7 +87,9 @@ public class MaxBinHeap {
             throw ex;
         }
 
-        heapify(keys[size]);
+        heapify(keys, size);
+
+        size--;
 
         for (int i = size; i >= origSize; i--)          //for delete max its a more convenient representation to have empty keys be 0
             keys[i] = 0;                                //but size handles the the proper end point anyways
@@ -95,9 +97,9 @@ public class MaxBinHeap {
         return maxKey;
     }
 
-    private void heapify(int keyOfIntrst){
-        int currIndex = 1, tempKey;
-        keys[currIndex] = keyOfIntrst;
+    private void heapify(int[] keysArr, int index){
+        int currIndex = 1, tempKey, keyOfIntrst = keysArr[index];
+        keysArr[currIndex] = keyOfIntrst;
 
         while(currIndex * 2 + 1 <= size){
             if(keyOfIntrst > keys[currIndex * 2] && keyOfIntrst > keys[currIndex * 2 + 1])
@@ -107,8 +109,6 @@ public class MaxBinHeap {
             keys[currIndex / 2] = tempKey;
             keys[currIndex] = keyOfIntrst;
         }
-
-        size--;
     }
 
     public String toString(){
@@ -124,6 +124,6 @@ public class MaxBinHeap {
     public static void sortArray(int[] a){       //(int k, int[] a)???
         MaxBinHeap tempHeap = new MaxBinHeap(a);
 
-        tempHeap.heapify(tempHeap.keys[tempHeap.getSize()]);
+        tempHeap.heapify(a, a.length - 1);
     }
 }
