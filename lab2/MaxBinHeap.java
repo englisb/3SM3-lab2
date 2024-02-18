@@ -21,8 +21,8 @@ public class MaxBinHeap {
             keys = new int[11];
         
         else{
-            keys = buildHeap(a);
             size = a.length;
+            keys = buildHeap(a);
         }
     }
     
@@ -31,8 +31,8 @@ public class MaxBinHeap {
         heap = Arrays.copyOf(heap, a.length + 1);
         System.arraycopy(a, 0, heap, 1, a.length);
 
-        for (int i = a.length - 1; i > 0; i--) {
-            heapifySingleElem(heap, i);
+        for (int i = size; i > 0; i--) {
+            heap = percolateDown(heap, i);
         }
         
         return heap;
@@ -45,18 +45,18 @@ public class MaxBinHeap {
     public void insert(int x){
         int xIndex = insertAtEnd(x);
         
-        percolateUp(xIndex);
+        percolateUp(keys, xIndex);
         
         size++;
     }
     
-    private int percolateUp(int index){
+    private int percolateUp(int[] arr, int index){
         int tempKey;
         //fix the tree by percolating up
-        while(keys[index / 2] != 0 && keys[index] > keys[index / 2]){         //percolating up the key just added in case it breaks the max heap property
-            tempKey = keys[index / 2];                 //swapping
-            keys[index / 2] = keys[index];
-            keys[index] = tempKey;
+        while(arr[index / 2] != 0 && arr[index] > arr[index / 2]){         //percolating up the key just added in case it breaks the max heap property
+            tempKey = arr[index / 2];                 //swapping
+            arr[index / 2] = arr[index];
+            arr[index] = tempKey;
             index = index / 2;
         }
 
@@ -99,7 +99,7 @@ public class MaxBinHeap {
             throw ex;
         }
 
-        heapifySingleElem(keys, 1);
+        percolateDown(keys, 1);
 
         size--;
 
@@ -109,19 +109,32 @@ public class MaxBinHeap {
         return maxKey;
     }
 
-    private void heapifySingleElem(int[] keysArr, int index){
-        int tempKey, keyOfIntrst = keysArr[index];
-        keysArr[index] = keyOfIntrst;
-
-        while(index * 2 + 1 <= size){
-            if(keyOfIntrst > keys[index * 2] && keyOfIntrst > keys[index * 2 + 1])
-                break;
-            index = keys[index * 2] > keys[index * 2 + 1] ? index * 2 : index * 2 + 1;
-            tempKey = keys[index];
-            keys[index / 2] = tempKey;
-            keys[index] = keyOfIntrst;
+    private int[] percolateDown(int[] keysArr, int index) {
+        int tempKey, keyOfIntrst = keysArr[index], greaterChldIndx;
+    
+        while (index * 2 <= size) { // Check if the left child exists (index * 2)
+            greaterChldIndx = index * 2; // Assume the left child is the greater one
+    
+            // Check if the right child exists and if it is greater than the left child
+            if (index * 2 + 1 <= size && keysArr[index * 2 + 1] > keysArr[index * 2]) {
+                greaterChldIndx = index * 2 + 1; // Update greater child index to the right child
+            }
+    
+            // Compare the greater child with the key of interest
+            if (keyOfIntrst >= keysArr[greaterChldIndx]) {
+                break; // Exit the loop if the key of interest is greater than both children
+            }
+    
+            // Swap the key of interest with the greater child
+            tempKey = keysArr[greaterChldIndx];
+            keysArr[greaterChldIndx] = keyOfIntrst;
+            keysArr[index] = tempKey;
+            index = greaterChldIndx;
         }
+    
+        return keysArr;
     }
+    
 
     public String toString(){
         String keysString = "";
@@ -133,13 +146,17 @@ public class MaxBinHeap {
         return keysString;
     }
 
-    public static void sortArray(int[] a){       //(int k, int[] a)???
-        MaxBinHeap tempHeap = new MaxBinHeap(a);
+    public static void sortArray(int[] a) {
+        // Step 1: Build a max heap from the array
+        MaxBinHeap heap = new MaxBinHeap(a);
         int max;
-
-        while (tempHeap.size > 0) {
-            max = tempHeap.deleteMax();
-            tempHeap.keys[tempHeap.size] = max;
+        
+        // Step 2: Repeatedly delete the maximum element from the heap
+        // and place it at the correct position from the end of the array
+        for (int i = a.length - 1; i >= 0; i--) {
+                max = heap.deleteMax(); // Extract the maximum element from the heap
+                a[i] = max; // Place the maximum element at its correct position in the array
         }
     }
+        
 }
