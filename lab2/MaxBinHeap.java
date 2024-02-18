@@ -1,5 +1,7 @@
 package lab2;
 
+import java.util.Arrays;
+
 public class MaxBinHeap {
 
     private int keys[];
@@ -7,28 +9,33 @@ public class MaxBinHeap {
 
     public MaxBinHeap(int n){
         if(n < 10){                 //initialize keys[] to have a default size 10 (+ 1 for empty first elements)
-            keys = new int[10];
+            keys = new int[11];
         }
         else{
-            keys = new int[n];
+            keys = new int[n + 1];
         }
     }
 
     public MaxBinHeap(int[] a){
         if (a.length == 0) 
-            keys = new int[10];
+            keys = new int[11];
         
         else{
             keys = buildHeap(a);
+            size = a.length;
         }
     }
     
     private int[] buildHeap(int[] a){
+        int[] heap = {0};
+        heap = Arrays.copyOf(heap, a.length + 1);
+        System.arraycopy(a, 0, heap, 1, a.length);
+
         for (int i = a.length - 1; i > 0; i--) {
-            heapifySingleElem(a, i);
+            heapifySingleElem(heap, i);
         }
         
-        return a;
+        return heap;
     }
 
     public int getSize(){
@@ -60,7 +67,7 @@ public class MaxBinHeap {
         int j;
 
         
-        if (size == keys.length) {            //if the first non empty key is the final element in the array of keys, need to make a new array of keys double in length and copy elements over
+        if (size == keys.length - 1) {            //if the first non empty key is the final element in the array of keys, need to make a new array of keys double in length and copy elements over
             int[] tempKeys = new int[keys.length * 2];      //allocated the temporary keys array of double size
             
             for (j = 1; j <= size; j++)               //copy all keys from the original array until the end
@@ -80,18 +87,19 @@ public class MaxBinHeap {
             RuntimeException ex = new RuntimeException("Cannot return max element, heap is empty!");
             throw ex;
         }
-        return keys[0];
+        return keys[1];
     }
 
     public int deleteMax() throws RuntimeException{
-        int maxKey = keys[0], origSize = size;
+        int maxKey = keys[1], origSize = size;
+        keys[1] = keys[size - 1];
 
         if (maxKey == 0) {
             RuntimeException ex = new RuntimeException("Cannot delete max element, heap is empty!");
             throw ex;
         }
 
-        heapifySingleElem(keys, size - 1);
+        heapifySingleElem(keys, 1);
 
         size--;
 
@@ -119,7 +127,7 @@ public class MaxBinHeap {
         String keysString = "";
 
         //iterate through each key in the list
-        for (int k = 0; k <= size && keys[k] != 0; k++)
+        for (int k = 1; k <= size && keys[k] != 0; k++)
             keysString += keys[k] + ", ";
 
         return keysString;
@@ -127,7 +135,11 @@ public class MaxBinHeap {
 
     public static void sortArray(int[] a){       //(int k, int[] a)???
         MaxBinHeap tempHeap = new MaxBinHeap(a);
+        int max;
 
-        tempHeap.heapifySingleElem(a, a.length - 1);
+        while (tempHeap.size > 0) {
+            max = tempHeap.deleteMax();
+            tempHeap.keys[tempHeap.size] = max;
+        }
     }
 }
