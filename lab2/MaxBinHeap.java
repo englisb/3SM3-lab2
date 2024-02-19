@@ -91,17 +91,18 @@ public class MaxBinHeap {
     }
 
     public int deleteMax() throws RuntimeException{
-        int maxKey = keys[1], origSize = size;
-        keys[1] = keys[size - 1];
-
-        if (maxKey == 0) {
-            RuntimeException ex = new RuntimeException("Cannot delete max element, heap is empty!");
+        RuntimeException ex = new RuntimeException("Cannot delete max element, heap is empty!");
+        int origSize = size, maxKey;
+        try {
+            maxKey = keys[1];
+            keys[1] = keys[size];
+        } 
+        catch (Exception e) {
             throw ex;
         }
 
-        percolateDown(keys, 1);
-
         size--;
+        percolateDown(keys, 1);
 
         for (int i = size; i >= origSize; i--)          //for delete max its a more convenient representation to have empty keys be 0
             keys[i] = 0;                                //but size handles the the proper end point anyways
@@ -156,6 +157,18 @@ public class MaxBinHeap {
         for (int i = a.length - 1; i >= 0; i--) {
                 max = heap.deleteMax(); // Extract the maximum element from the heap
                 a[i] = max; // Place the maximum element at its correct position in the array
+        }
+
+        int start = 0;
+        int end = a.length - 1;
+        while (start < end) {
+            //swap the elements at start and end
+            int temp = a[start];
+            a[start] = a[end];
+            a[end] = temp;
+            //move the indices towards the center
+            start++;
+            end--;
         }
     }
         
