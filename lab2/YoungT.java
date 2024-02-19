@@ -37,6 +37,12 @@ public class YoungT {
 
         for (int i = 0; i < a.length; i++) {
             for (int j = 0; j < a[0].length; j++) {
+                tab[i][j] = inf;
+            }
+        }
+
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < a[0].length; j++) {
                 insert(a[i][j]);
                 finInts++;
             }
@@ -68,10 +74,11 @@ public class YoungT {
     
     public boolean insert(int x){
         int currRow = tab.length - 1, currCol = tab[0].length - 1, leftElem = 0, aboveElem = 0, temp;
-        tab[currRow][currCol] = x;
-
+        
         if (x >= inf || isFull())
 			return false;
+        
+        tab[currRow][currCol] = x;
 
 		while (currCol >= 1 && currRow >= 1) {
             //Checks if left element is larger than the current element
@@ -81,6 +88,10 @@ public class YoungT {
             //Checks if above element is larger than the current element
             if (tab[currRow][currCol] < tab[currRow - 1][currCol])
                 aboveElem = tab[currRow-1][currCol];
+                
+            //If neither the left nor above element are larger than the current one
+            if (leftElem == 0 && aboveElem == 0)
+                break;
 
             //Swaps to the left
             if (leftElem >= aboveElem) {
@@ -100,9 +111,6 @@ public class YoungT {
                 currRow--;
             }
 
-            //If neither the left nor above element are larger than the current one
-            if (leftElem == 0 && aboveElem == 0)
-                break;
         }
 
         if(currCol == 0){
@@ -127,6 +135,102 @@ public class YoungT {
 
 		return true;
     }
+/*
+//Inserts the element x into the tableau and performs the necessary swaps
+public boolean insert(int x) {
+
+
+    int row = tab.length-1;
+    int col = tab[0].length-1;
+
+    //Does not insert if x is larger or equal to infinity or if the tab is full
+    if (x >= inf || isFull())
+        return false;
+
+
+    else {
+
+        //Defines the last element of the tab to be the inserted element
+        tab[row][col] = x;
+
+        //Calls the helper function to move the element to the correct location
+        insertHelper(row,col);
+
+        return true;
+
+    }
+
+
+
+
+
+}
+
+
+//Helper function to recursively insert the element in the correct spot of the tableau
+private void insertHelper (int row, int col) {
+
+
+    int temp;
+
+    int leftElement = 0;
+    int aboveElement = 0;
+    boolean leftSwap = false;
+
+
+
+    //Checks if left element exists and is larger than the current element
+    if (col > 0 && tab[row][col] < tab[row][col-1])
+        leftElement = tab[row][col-1];
+
+    //Checks if above element exists and is larger than the current element
+    if (row > 0 && tab[row][col] < tab[row-1][col])
+        aboveElement = tab[row-1][col];
+
+
+    //If neither the left nor above element are larger than the current one
+    if (leftElement == 0 && aboveElement == 0)
+        return;
+
+
+    //Determines whether to perform a swap to the left or above (depending on which is larger)
+    if (leftElement>=aboveElement)
+        leftSwap = true;
+    else
+        leftSwap = false;
+
+
+
+
+    //Swaps to the left
+    if (leftSwap == true) {
+
+        //Swaps the two elements
+        temp = tab[row][col];
+        tab[row][col] = tab[row][col-1];
+        tab[row][col-1] = temp;
+
+        //Recursively checks the column to the left
+        insertHelper(row, col-1);
+    }
+
+    //Swaps up
+    if (leftSwap == false) {
+
+        //Swaps the two elements
+        temp = tab[row][col];
+        tab[row][col] = tab[row-1][col];
+        tab[row-1][col] = temp;
+
+        //Recursively checks the row above
+        insertHelper(row-1, col);
+    }
+
+    return;
+}
+
+*/
+
 
     public int readMin() throws RuntimeException{
         if (isEmpty()) {
@@ -150,7 +254,7 @@ public class YoungT {
 		tab[currRow][currCol] = inf;
 
 		//Calls the helper function to move the element to the correct location
-		swaps(0,0);
+		percolateDown(0,0);
 
 		finInts--;
 		return min;
@@ -158,7 +262,7 @@ public class YoungT {
 
 
 	//swaps the selected element further in the tableau until it satisfies the nondecreasing property
-	private void swaps(int currRow, int currCol) {
+	private void percolateDown(int currRow, int currCol) {
 		int temp, rightElem = 0, belowElem = 0;
 
         //checks if below element exists and is larger than the current one
@@ -180,7 +284,7 @@ public class YoungT {
             tab[currRow][currCol] = tab[currRow + 1][currCol];
             tab[currRow + 1][currCol] = temp;
             //checks the next column
-            swaps(currRow, currCol + 1);
+            percolateDown(currRow, currCol + 1);
         }
 
         //swap down
@@ -189,7 +293,7 @@ public class YoungT {
             tab[currRow][currCol] = tab[currRow][currCol + 1];
             tab[currRow][currCol + 1] = temp;
             //checks the next currRow
-            swaps(currRow + 1, currCol);
+            percolateDown(currRow + 1, currCol);
         }
 
 		return;
