@@ -44,7 +44,6 @@ public class YoungT {
         for (int i = 0; i < a.length; i++) {
             for (int j = 0; j < a[0].length; j++) {
                 insert(a[i][j]);
-                finInts++;
             }
         }
 
@@ -71,8 +70,48 @@ public class YoungT {
 			return true;
 		return false;
     }
+
+    public boolean insert(int x) {
+        // Check if x is larger than or equal to inf or if the tableau is full
+        if (x >= inf || finInts == tab.length * tab[0].length)
+            return false;
+        
+        // Start from the bottom-right corner of the tableau
+        int i = tab.length - 1, j = tab[0].length - 1, minI, minJ, temp;
+        
+        tab[i][j] = x; // Temporarily place x at the bottom-right corner
+        while (true) {
+            // Find the smallest among the current cell's right and bottom neighbors
+            minI = i; minJ = j;
+            
+            if (i > 0 && tab[i-1][j] > tab[minI][minJ]) {
+                minI = i - 1;
+            }
+            if (j > 0 && tab[i][j-1] > tab[minI][minJ]) {
+                minJ = j - 1;
+            }
+            
+            // If the current cell is the smallest, the tableau is correctly ordered
+            if (minI == i && minJ == j) {
+                break;
+            }
+            
+            // Swap the current cell with the smallest of its neighbors
+            temp = tab[i][j];
+            tab[i][j] = tab[minI][minJ];
+            tab[minI][minJ] = temp;
+            
+            // Move to the next cell for the next iteration
+            i = minI;
+            j = minJ;
+        }
+        
+        finInts++; // Increment the count of finite integers
+        return true;
+    }
     
-    public boolean insert(int x){
+    
+    /*public boolean insert(int x){
         int currRow = tab.length - 1, currCol = tab[0].length - 1, leftElem = 0, aboveElem = 0, temp;
         
         if (x >= inf || isFull())
@@ -135,6 +174,7 @@ public class YoungT {
 
 		return true;
     }
+    */
 /*
 //Inserts the element x into the tableau and performs the necessary swaps
 public boolean insert(int x) {
