@@ -130,24 +130,19 @@ public class YoungT {
 
     public int readMin() throws RuntimeException{
         if (isEmpty()) {
-            RuntimeException ex = new RuntimeException("tab is empty");
+            RuntimeException ex = new RuntimeException("Tableau is empty");
             throw ex;
         }
 
         return tab[0][0];
     }
 
-
-    //TODO fiinish this
     public int deleteMin() throws RuntimeException{
-        if (isEmpty()) {
-            RuntimeException ex = new RuntimeException("tab is empty");
+        RuntimeException ex = new RuntimeException("Tableau is empty");
+        if (isEmpty())
             throw ex;
-        }
 
-        int min = tab[0][0];
-        int currRow = tab.length - 1;
-		int currCol = tab[0].length - 1;
+        int min = tab[0][0], currRow = tab.length - 1, currCol = tab[0].length - 1;
 
         //Defines the last element of the tab to be the inserted element
 		tab[0][0] = tab[currRow][currCol];
@@ -155,76 +150,125 @@ public class YoungT {
 		tab[currRow][currCol] = inf;
 
 		//Calls the helper function to move the element to the correct location
-		percolateDown(0,0);
+		swaps(0,0);
 
 		finInts--;
 		return min;
 	}
 
 
-	//Moves the element down to its correct location in the tab
-	private void percolateDown(int currRow, int currCol) {
+	//swaps the selected element further in the tableau until it satisfies the nondecreasing property
+	private void swaps(int currRow, int currCol) {
+		int temp, rightElem = 0, belowElem = 0;
 
+        //checks if below element exists and is larger than the current one
+        if (currRow < tab[0].length - 1 && tab[currRow][currCol] > tab[currRow + 1][currCol])
+            belowElem = tab[currRow + 1][currCol];
 
-		int temp;
+		//checks if right element exists and is larger than the current one
+		if (currCol < tab.length - 1 && tab[currRow][currCol] > tab[currRow][currCol + 1])
+			rightElem = tab[currRow][currCol + 1];
 
-		int rightElement = 0;
-		int belowElement = 0;
-		boolean rightSwap = false;
-
-
-
-		//Checks if right element exists and is larger than the current element
-		if (currCol < tab.length-1 && tab[currRow][currCol] > tab[currRow][currCol+1])
-			rightElement = tab[currRow][currCol+1];
-
-		//Checks if below element exists and is larger than the current element
-		if (currRow < tab[0].length-1 && tab[currRow][currCol] > tab[currRow+1][currCol])
-			belowElement = tab[currRow+1][currCol];
-
-		//If neither the left nor above element are smaller than the current one
-		if (rightElement == 0 && belowElement == 0)
+		//if the current element is larger than the right and below adjacent elements, it is in the correct spot
+		if (rightElem == 0 && belowElem == 0)
 			return;
 
+		//swap right
+        if (belowElem <= rightElem){
+            //Swaps the two elements
+            temp = tab[currRow][currCol];
+            tab[currRow][currCol] = tab[currRow + 1][currCol];
+            tab[currRow + 1][currCol] = temp;
+            //checks the next column
+            swaps(currRow, currCol + 1);
+        }
 
-		//Determines whether to perform a swap to the left or above (depending on which is smaller)
-		if (rightElement<=belowElement)
-			rightSwap = true;
-		else
-			rightSwap = false;
-
-		//Swaps to the right
-		if (rightSwap == true) {
-
-			//Swaps the two elements
-			temp = tab[currRow][currCol];
-			tab[currRow][currCol] = tab[currRow][currCol+1];
-			tab[currRow][currCol+1] = temp;
-
-			//Recursively checks the column to the right
-			percolateDown(currRow, currCol+1);
-		}
-
-		//Swaps down
-		if (rightSwap == false) {
-
-			//Swaps the two elements
-			temp = tab[currRow][currCol];
-			tab[currRow][currCol] = tab[currRow+1][currCol];
-			tab[currRow+1][currCol] = temp;
-
-			//Recursively checks the currRow below
-			percolateDown(currRow+1, currCol);
-		}
+        //swap down
+		else{
+            temp = tab[currRow][currCol];
+            tab[currRow][currCol] = tab[currRow][currCol + 1];
+            tab[currRow][currCol + 1] = temp;
+            //checks the next currRow
+            swaps(currRow + 1, currCol);
+        }
 
 		return;
 	}
 
     public boolean find(int x) throws RuntimeException{
-        return false;
+        RuntimeException empty = new RuntimeException("Tableau is empty"), large = new RuntimeException("Element too large");
+        int currRow = 0, currCol = tab[0].length - 1;
+
+
+		if (x >= inf || isEmpty())
+            throw large;
+
+        if (isEmpty())
+            throw empty;
+
+        //Runs until a match is a found
+        while(tab[currRow][currCol] != x) {
+            
+            //Checks if next probe should be below
+            if (x > tab[currRow][currCol]) {
+                //Prints current element then moves on to the next
+                if (currRow + 1 < tab.length) {
+                    if (tab[currRow][currCol] == inf)
+                        System.out.print("infinity, "); 
+                    else
+                        System.out.print(tab[currRow][currCol] + ", "); 
+                    
+                    currRow++;
+                }
+                //If the current currRow to check is the final one, the element is not in the tableau
+                else {
+                    System.out.print(tab[currRow][currCol]);
+                    return false;
+                }
+            }
+
+            //Checks if next probe should be to the left
+            if (x < tab[currRow][currCol]) {
+
+                //Prints current element then moves on to the next
+                if (currCol - 1 >= 0) {
+                    if (tab[currRow][currCol] == inf)
+                        System.out.print("infinity, "); 
+                    else
+                        System.out.print(tab[currRow][currCol] + ", ");
+                    currCol--;
+                }
+
+                //If the current column to check is the final one, the element is not in the tableau
+                else {
+                    System.out.print(tab[currRow][currCol]);
+                    return false;
+                }
+
+            }
+        }
+
+        //Prints the final element and returns true
+        System.out.print(tab[currRow][currCol]);
+        return true;
     }
 
     public String toString(){
-        return "";
+        String str = "";
+
+		for (int i = 0; i < tab.length; i++) {
+			for (int j = 0; j < tab[0].length; j++) {
+				
+				//Adds each element from the tableau to the string
+				if (tab[i][j] == inf)
+					str += "infinity";
+				else
+					str += tab[i][j];
+
+                str += ", ";
+			}
+		}
+
+		return str;
     }
 }
