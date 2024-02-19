@@ -3,11 +3,10 @@ package lab2;
 public class YoungT {
 
     private int tab[][], finInts;
-
-    private static final int infinity = 0;
+    private static int inf;
     
     public YoungT(int k, int n, int infinity){
-
+        inf = infinity;
     }
 
     public YoungT(int[][] a){
